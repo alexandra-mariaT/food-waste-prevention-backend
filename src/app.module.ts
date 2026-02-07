@@ -1,10 +1,27 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { KnexModule } from 'nest-knexjs';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProductsModule } from './products/products.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    KnexModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          client: 'postgres',
+          connection: {
+            host: configService.get<string>('DB_HOST'),
+            user: configService.get<string>('DB_USERNAME'),
+            password: configService.get<string>('DB_PASSWORD'),
+            database: configService.get<string>('DB_NAME'),
+            port: configService.get<number>('DB_PORT'),
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    ProductsModule,
+  ],
 })
 export class AppModule {}
