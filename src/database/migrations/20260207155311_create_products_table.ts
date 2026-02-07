@@ -7,7 +7,11 @@ export async function up(knex: Knex): Promise<void> {
     table.string("description").nullable();
     table.decimal("price", 10, 2).notNullable();
     table.integer("quantity").notNullable().defaultTo(0);
-    table.integer("store_id").notNullable();
+    
+    table.integer("store_id").unsigned().notNullable()
+         .references('id').inTable('stores')
+         .onDelete('CASCADE'); 
+
     table.timestamps(true, true);
   });
 }

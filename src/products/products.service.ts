@@ -14,7 +14,7 @@ export class ProductsService {
 
   async findAll() {
     return this.knex('products')
-      .join('stores', 'products.store_id', 'stores.id')
+      .leftJoin('stores', 'products.store_id', 'stores.id')
       .select(
         'products.id',
         'products.name',
@@ -42,7 +42,7 @@ export class ProductsService {
         throw new NotFoundException(`Store with ID ${dto.store_id} does not exist`);
       }
 
-      if (store.owner_id !== userId) {
+      if (Number(store.owner_id) !== Number(userId)) {
         throw new UnauthorizedException('You do not have permission to add products to this store');
       }
 
@@ -58,7 +58,7 @@ export class ProductsService {
 
       return newProduct;
     } catch (error) {
-      console.error('EROARE DATABASE:', error.message);
+      console.error('DATABASE ERROR:', error.message);
       throw error;
     }
   }
@@ -96,7 +96,7 @@ export class ProductsService {
           id: reservation.id,
           product: updatedProduct.name,
           new_quantity: updatedProduct.quantity,
-          timestamp: reservation.reserved_at
+          timestamp: reservation.created_at || new Date()
         }
       };
     });
