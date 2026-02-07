@@ -1,18 +1,21 @@
 import { Knex } from "knex";
+import * as bcrypt from 'bcrypt';
 
 export async function seed(knex: Knex): Promise<void> {
-    await knex("users").del();
+  await knex("users").del();
 
-    await knex("users").insert([
-        { 
-            email: "admin@foodwaste.com", 
-            password: "password123", // for now, but will put bcrypt at authentication level
-            role: "admin" 
-        },
-        { 
-            email: "client@test.com", 
-            password: "password123", 
-            role: "client" 
-        }
-    ]);
-};
+  const hashedPassword = await bcrypt.hash('password123', 10);
+
+  await knex("users").insert([
+    { 
+      email: 'admin@foodwaste.com', 
+      password: hashedPassword, 
+      role: 'admin' 
+    },
+    { 
+      email: 'client@test.com', 
+      password: hashedPassword, 
+      role: 'client' 
+    }
+  ]);
+}
