@@ -96,7 +96,7 @@ export class ProductsService {
           id: reservation.id,
           product: updatedProduct.name,
           new_quantity: updatedProduct.quantity,
-          timestamp: reservation.created_at || new Date()
+          timestamp: reservation.reserved_at || new Date()
         }
       };
     });

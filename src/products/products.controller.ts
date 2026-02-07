@@ -1,5 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param, Patch } from '@nestjs/common'; // Am adăugat Get aici
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Body, Req, Get, Param, Patch, ParseIntPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create_product.dto';
 
@@ -13,17 +12,20 @@ export class ProductsController {
   }
   
   @Get('store/:storeId')
-async getByStore(@Param('storeId') storeId: string) {
-  return this.productsService.findByStore(Number(storeId));
-    }
+  async getByStore(@Param('storeId', ParseIntPipe) storeId: number) {
+    return this.productsService.findByStore(storeId);
+  }
 
-  @UseGuards(AuthGuard('jwt')) 
   @Patch(':id/reserve')
-    async reserve(@Param('id') id: string, @Req() req) {
-  return this.productsService.reserveProduct(Number(id), req.user.userId);
-    }
+  async reserve(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    // until we have authentication, we'll use a hardcoded user ID for testing
+    const tempUserId = 6; 
+    return this.productsService.reserveProduct(id, tempUserId);
+  }
+
   @Post()
   async create(@Body() createProductDto: CreateProductDto, @Req() req) {
-    return this.productsService.create(createProductDto, req.user.userId);
+    const tempUserId = 1; 
+    return this.productsService.create(createProductDto, tempUserId);
   }
 }
