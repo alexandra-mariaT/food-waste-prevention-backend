@@ -3,6 +3,7 @@ import { KnexModule } from 'nest-knexjs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductsModule } from './products/products.module';
 import { StoresModule } from './stores/stores.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StoresModule } from './stores/stores.module';
     }),
     ProductsModule,
     StoresModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
