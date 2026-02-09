@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 
@@ -31,5 +31,30 @@ export class ReservationsService {
         'products.price'
       )
       .orderBy('reservations.id', 'desc');
+  }
+
+  async cancel(id: number, userId: number) {
+    const reservation = await this.knex('reservations').where({ id }).first();
+
+    if (!reservation) {
+      throw new NotFoundException(`Reservation with ID ${id} does not exist`);
+    }
+
+    if (Number(reservation.user_id) !== Number(userId)) {
+      throw new Error('You do not have permission to cancel this reservation');
+    }
+
+    const product = await this.knex('products').where({ id: reservation.product_id }).first();
+
+    await this.knex('products')
+      .where({ id: reservation.product_id })
+      .update({ 
+        quantity: product.quantity + 1,
+        updated_at: new Date()
+      });
+
+    await this.knex('reservations').where({ id }).del();
+
+    return { message: 'Reservation cancelled successfully' };
   }
 }

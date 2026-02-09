@@ -7,6 +7,7 @@ import {
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { CreateProductDto } from './dto/create_product.dto';
+import { UpdateProductDto } from './dto/update_product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -100,5 +101,52 @@ export class ProductsService {
         }
       };
     });
+  }
+
+  async update(productId: number, dto: UpdateProductDto, userId: number) {
+    const product = await this.knex('products').where({ id: productId }).first();
+
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${productId} does not exist`);
+    }
+
+    const store = await this.knex('stores').where({ id: product.store_id }).first();
+
+    if (Number(store.owner_id) !== Number(userId)) {
+      throw new UnauthorizedException('You do not have permission to update this product');
+    }
+
+    const updateData = {
+      ...(dto.name !== undefined && { name: dto.name }),
+      ...(dto.description !== undefined && { description: dto.description }),
+      ...(dto.price !== undefined && { price: dto.price }),
+      ...(dto.quantity !== undefined && { quantity: dto.quantity }),
+      updated_at: new Date()
+    };
+
+    const [updatedProduct] = await this.knex('products')
+      .where({ id: productId })
+      .update(updateData)
+      .returning('*');
+
+    return updatedProduct;
+  }
+
+  async delete(productId: number, userId: number) {
+    const product = await this.knex('products').where({ id: productId }).first();
+
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${productId} does not exist`);
+    }
+
+    const store = await this.knex('stores').where({ id: product.store_id }).first();
+
+    if (Number(store.owner_id) !== Number(userId)) {
+      throw new UnauthorizedException('You do not have permission to delete this product');
+    }
+
+    await this.knex('products').where({ id: productId }).del();
+
+    return { message: 'Product deleted successfully' };
   }
 }
