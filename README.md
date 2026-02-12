@@ -1,8 +1,7 @@
-🌿 Food Waste Prevention API
-This is a backend system developed to reduce food waste by connecting local businesses with customers. Shop owners can list surplus food at reduced prices, and users can reserve these items in real-time.
+# 🌿 Food Waste Prevention API
+This is a Proof of Concept (PoC) backend system developed during a Technical Mentorship Program. The project aims to reduce food waste by connecting local businesses with customers, allowing shop owners to list surplus food and users to make real-time reservations.
 
 🛠 Tech Stack
-
 - Framework: NestJS (TypeScript)
 - Database: PostgreSQL & Knex.js
 - Containerization: Docker
@@ -10,7 +9,6 @@ This is a backend system developed to reduce food waste by connecting local busi
 - Documentation: Swagger UI
 
 💡 Key Features
-
 - Dual-Role System: Secure separation between restaurant (owners) and client users.
 - Atomic Reservations: Real-time stock management. Reserving an item automatically updates the inventory and checks availability using SQL transactions.
 - Owner Protection: Security guards ensure that only the rightful owner of a shop can manage its products.
